@@ -41,26 +41,83 @@ RedBlackTree::RedBlackTree(){
 void RedBlackTree::Insert(int d){
 	//if tree is emtpy, make a root node
     if(root == nullptr){
-        RBTNode node; 
-        node.color = COLOR_BLACK; // root node will always be black
-        node.data = d; 
-        root = &node;
+        RBTNode *node = new RBTNode; 
+        node->color = COLOR_BLACK; // root node will always be black
+        node->data = d; 
+        root = node;
         numItems++;
     } // add further insert here 
     else{
-        RBTNode node; 
-        node.color = COLOR_RED;
-        node.data = d; 
+        RBTNode *node = new RBTNode; //dynamically create the node to insert; 
+
+        node->color = COLOR_RED;
+        node->data = d; 
 
         //perform a basic insert; 
-        BasicInsert(&node); 
+        BasicInsert(node); 
+        numItems++; //update the size of the tree
 
+        if(node->parent != nullptr && node->parent->color == COLOR_RED){
+
+
+        }
         
 
 
 
     }
 }   
+
+
+//impleme
+
+
+
+bool RedBlackTree::IsLeftChild(RBTNode *node) const{
+    RBTNode *parent = node->parent; 
+
+    if(parent->left == node){
+        return true; //will return true if the parents left child is equal to the inputted node 
+    }
+    else{
+        return false; 
+    }
+}
+
+bool RedBlackTree::IsRightChild(RBTNode *node) const{
+    RBTNode *parent = node->parent; 
+
+    if(parent->right == node){
+        return true; 
+    }
+    else{
+        return false;
+    }
+}
+
+RBTNode* RedBlackTree::GetUncle(RBTNode *node) const{    
+    
+    RBTNode *parent = node->parent; 
+    
+    if(node->parent->parent == nullptr){
+        return nullptr; //will return nullptr if the node is too high to have an uncle, 
+                        //for example, if it is the child of the root node, there will be no uncle. 
+    }
+    else if(IsLeftChild(node)){
+        return node->parent->parent->right;
+
+    }
+    else if(IsRightChild(node)){
+        return node->parent->parent->left;
+    }
+}
+
+
+
+
+
+
+
 
 void RedBlackTree::BasicInsert(RBTNode *node){
 
