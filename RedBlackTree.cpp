@@ -48,6 +48,10 @@ RedBlackTree::RedBlackTree(){
 	root = nullptr; 
 }
 
+RedBlackTree::RedBlackTree(int newData){
+    this->Insert(newData); 
+}
+
 
 
 //copy contructor: 
@@ -57,9 +61,6 @@ RedBlackTree::RedBlackTree(const RedBlackTree &rbt){
     // newNode->data = rbt->data;
     // return 
 }
-
-
-
 
 
 
@@ -96,7 +97,8 @@ void RedBlackTree::InsertFixUp(RBTNode *new_node){
     RBTNode *uncle = GetUncle(new_node); 
     RBTNode *grand_parent = parent->parent; 
 
-    if(uncle->color == COLOR_BLACK){
+    if(uncle == nullptr || uncle->color == COLOR_BLACK){ //if the uncle doesn't exist it will be a null ptr, which is also 
+                                                        //considered black 
 
         //1-1
         if(grand_parent != nullptr){
@@ -123,7 +125,7 @@ void RedBlackTree::InsertFixUp(RBTNode *new_node){
         else if(IsRightChild(new_node) && IsLeftChild(parent)){
             LeftRotate(parent); 
             RightRotate(grand_parent); 
-            new_node->color - COLOR_BLACK; 
+            new_node->color = COLOR_BLACK; 
             parent->color = COLOR_RED;
         }
         //1-5
@@ -144,13 +146,11 @@ void RedBlackTree::InsertFixUp(RBTNode *new_node){
                 if(grand_parent->parent != nullptr){
                     if(grand_parent->parent->color == COLOR_RED){
                         InsertFixUp(grand_parent);
-                    } 
-           
+                    }  
                 }   
             }
         }
     }
-           
 }
 
 bool RedBlackTree::IsLeftChild(RBTNode *node) const{
@@ -192,7 +192,6 @@ RBTNode* RedBlackTree::GetUncle(RBTNode *node) const{
     }
 }
 
-
 void RedBlackTree::BasicInsert(RBTNode *node){
 
     //this assumes that the root node already exists.
@@ -209,13 +208,12 @@ void RedBlackTree::BasicInsert(RBTNode *node){
             //if base case, then just add the node and break out of the while loop.
             if(currNode->right == nullptr){
                 currNode->right = node;
+                parent = currNode; 
                 break;
             }
             //else, make the right node the currnode and continue throughout the loop
-            else{
-                RBTNode *temp = currNode;//this will hold the orignal node so that we can reference it later as a parent. 
+            else{         
                 currNode = currNode->right; 
-                currNode->parent = temp; //after updating the currNode, it sets its parent value. 
                 continue; 
             }
         }
@@ -224,17 +222,18 @@ void RedBlackTree::BasicInsert(RBTNode *node){
         if(node->data < currNode->data){
             if(currNode->left == nullptr){
                 currNode->left = node;
+                parent = currNode; 
                 break;
             }
             //else, make the right node the currnode and continue throughout the loop
             else{
-                RBTNode *temp = currNode;
                 currNode = currNode->left; 
-                currNode->parent = temp;
                 continue; 
             }
         }
     }
+
+    node->parent = parent; 
 }
 
 int RedBlackTree::GetMin() const {
@@ -261,7 +260,7 @@ int RedBlackTree::GetMax() const {
     return currNode->data; 
 }
 
-RBTNode *CopyOf(const RBTNode *node){
+RBTNode* RedBlackTree::CopyOf(const RBTNode *node){
 
     RBTNode *newNode = new RBTNode; //dynamically create a new node; 
 
@@ -303,35 +302,132 @@ bool containsHelper(RBTNode node, int data){
 }
 
 
+
+//these have bugs and need to be fixed 
 void RedBlackTree::RightRotate(RBTNode *node){
 
 
-    RBTNode *copyOfParent = CopyOf(node); //save a copy of the parent
+    // RBTNode *copyOfParent = CopyOf(node); //save a copy of the parent
+    // RBTNode *savedRightChild = node->left->right;  //save a copy of the part of the tree that may become abonded
 
-    RBTNode *savedRightChild = node->left->right;  //save a copy of the part of the tree that may become abonded
+    RBTNode *leftChild = node->left; 
 
-    node = node->left; //this rotates the left child up; 
+    //this may be redunant: 
+    if(leftChild == nullptr){
+        return; 
+    }
 
-    node->right = copyOfParent; //this (updates) makes the right side of the rotated node
+    node->left = leftChild->right; 
 
-    //the left side of now parent node stays the same
-    //adressing the now abandoned right node of: 
+    if(leftChild->right != nullptr){
+        leftChild->right->parent = node; 
+    }
 
-    node->right->left = savedRightChild; 
+    leftChild->parent = node->parent; 
+
+    if(node->parent == nullptr){
+        root = leftChild; //this makes sure that the root member does not get lost after a rotaiton
+    }
+
+    else if (node == node->parent->left){
+        node->parent->left = leftChild; 
+    }
+
+    else{
+        node->parent->right = leftChild; 
+    }
+
+    leftChild->right = node; 
+    node->parent = leftChild; 
+
 }
 
 
 void RedBlackTree::LeftRotate(RBTNode *node){
-    //this is the same as the above right rotate, just reveresed: 
+    //this is copied from above, just reverersed, just reveresed: 
     
-    RBTNode *copyOfParent = CopyOf(node); //copy of parent child 
+    // RBTNode *copyOfParent = CopyOf(node); //copy of parent child 
+    // RBTNode *savedLeftChild = node->right->left;  //this will become the left childs right node (from the parent)
 
-    RBTNode *savedLeftChild = node->right->left;  //this will become the left childs right node (from the parent)
+    RBTNode *rightChild = node->right; //save the right child so that it can be accessed later: 
 
-    node = node->right; //this rotates the right child up; 
+    //This part might be redundant: 
+    if(rightChild == nullptr){
+        return; 
+    }
 
-    node->left = copyOfParent; //this make continues the pattern 
+    node->right = rightChild->left; //move the nodes right child to the left of the left sub tree
 
-    //the right side of now parent node stays the same, but it updates the right child spot:
-    node->left->right = savedLeftChild; 
+    //if statement may again be redundant?
+    if(rightChild->left != nullptr){
+        rightChild->left->parent = node; 
+    }
+
+    rightChild->parent = node->parent; 
+
+    if(node->parent == nullptr){ //if its parent is nullptr that implies that it is also the root 
+        root = rightChild; //makes sure that the root does not get lost after a rotatation 
+    }
+
+    else if(node == node->parent->left){
+        node->parent->left = rightChild; 
+    }
+
+    else{
+        node->parent->right = rightChild; 
+    }
+
+    rightChild->left = node; 
+    node->parent = rightChild; 
 }
+
+
+
+string RedBlackTree::ToPrefixString(const RBTNode *n){
+
+    //will use these if the base case is not satisfied
+    string color; 
+    string leftSide; 
+    string rightSide; 
+    string answer;
+
+    //do this recursively, base case is that the ndoe is nullptr: 
+    if(n == nullptr){
+        return ""; 
+    }
+    //else create a string to that holds the info for the currNode, then recursively get the 
+    //rest of the right and left trees:
+    else{
+        if(n->color == COLOR_BLACK){
+            color = "B";
+        }else{
+            color = "R"; 
+        }
+
+        answer = " " + color + to_string(n->data) + " ";
+
+        leftSide = ToPrefixString(n->left); 
+        rightSide = ToPrefixString(n->right); 
+
+    }
+
+    return answer + leftSide + rightSide; 
+
+
+    
+}
+
+//for debugging: 
+string RedBlackTree::ToPostfixString(const RBTNode *n){
+
+    return " "; 
+}
+
+// string RedBlackTree::ToInfixString(const RBTNode *n){
+
+
+//     return " "; 
+
+// }
+
+

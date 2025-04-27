@@ -58,7 +58,7 @@ void TestInsertThirdNode(){
 	rbt->Insert(30);
 	rbt->Insert(15);
 	rbt->Insert(10); // Left Left
-	//cout << "rbt: "  << rbt->ToPrefixString() << endl;
+	cout << "rbt: "  << rbt->ToPrefixString() << endl;
 	assert(rbt->ToPrefixString() == " B15  R10  R30 ");
 	delete rbt;
 	
