@@ -38,6 +38,21 @@ RedBlackTree::RedBlackTree(){
 	root = nullptr; 
 }
 
+
+
+//copy contructor: 
+RedBlackTree::RedBlackTree(const RedBlackTree &rbt){
+
+    // newNode->color = rbt.color;
+    // newNode->data = rbt->data;
+    // return 
+}
+
+
+
+
+
+
 void RedBlackTree::Insert(int d){
 	//if tree is emtpy, make a root node
     if(root == nullptr){
@@ -58,7 +73,7 @@ void RedBlackTree::Insert(int d){
         numItems++; //update the size of the tree
 
         if(node->parent != nullptr && node->parent->color == COLOR_RED){
-
+            
 
         }
         
@@ -69,7 +84,79 @@ void RedBlackTree::Insert(int d){
 }   
 
 
-//impleme
+
+void RedBlackTree::InsertFixUp(RBTNode *new_node){
+    
+    RBTNode *parent = new_node->parent; 
+    RBTNode *uncle = GetUncle(new_node); 
+    RBTNode *grand_parent = parent->parent; 
+
+    if(uncle->color == COLOR_BLACK){
+
+        //1-1
+        if(grand_parent != nullptr){
+            grand_parent->color = COLOR_RED;
+        }
+        //1-2
+        if(IsLeftChild(new_node) && IsLeftChild(parent)){
+            RightRotate(grand_parent); //still need to implement the rotate functions
+            parent->color = COLOR_BLACK;  
+        }
+        //1-3
+        else if(IsRightChild(new_node) && IsRightChild(parent)){
+            RightRotate(parent); 
+            LeftRotate(grand_parent); 
+            new_node->color = COLOR_BLACK; 
+            parent->color = COLOR_RED;
+        }
+        //1-4
+        else if(IsRightChild(new_node) && IsLeftChild(parent)){
+            LeftRotate(parent); 
+            RightRotate(grand_parent); 
+            new_node->color - COLOR_BLACK; 
+            parent->color = COLOR_RED;
+        }
+        //1-5
+        else{
+            //this case is not possible so it will throw an error: 
+            throw invalid_argument("invalid state"); 
+        }
+    }
+    else if(uncle != nullptr && uncle->color == COLOR_RED){
+
+        //2-1
+        parent->color = COLOR_BLACK; 
+        uncle->color = COLOR_BLACK; 
+
+        if(grand_parent != nullptr){
+            if(root != grand_parent){
+                grand_parent->color = COLOR_RED;
+                if(grand_parent->parent != nullptr){
+                    if(grand_parent->parent->color == COLOR_RED){
+                        InsertFixUp(grand_parent);
+                    } 
+           
+                }   
+            }
+        }
+    }
+           
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -97,17 +184,17 @@ bool RedBlackTree::IsRightChild(RBTNode *node) const{
 
 RBTNode* RedBlackTree::GetUncle(RBTNode *node) const{    
     
-    RBTNode *parent = node->parent; 
+    RBTNode *grandParent = node->parent->parent; 
 
     if(node->parent->parent == nullptr){
         return nullptr; //will return nullptr if the node is too high to have an uncle, 
                         //for example, if it is the child of the root node, there will be no uncle. 
     }
-    else if(IsLeftChild(node)){
+    else if(IsLeftChild(node->parent)){
         return node->parent->parent->right;
 
     }
-    else if(IsRightChild(node)){
+    else if(IsRightChild(node->parent)){
         return node->parent->parent->left;
     }
 }
@@ -155,16 +242,44 @@ void RedBlackTree::BasicInsert(RBTNode *node){
             }
         }
     }
+}
 
+int RedBlackTree::GetMin() const {
 
+    RBTNode *currNode = root; 
 
+    while(currNode->left != nullptr){
+        currNode = currNode->left;
 
+    }
 
+    return currNode->data; 
+}
+		   
+int RedBlackTree::GetMax() const {
+    
+    RBTNode *currNode = root; 
 
+    while(currNode->right != nullptr){
+        currNode = currNode->right;
 
+    }
 
+    return currNode->data; 
+}
 
+RBTNode *CopyOf(const RBTNode *node){
 
+    RBTNode *newNode = new RBTNode; //dynamically create a new node; 
+
+    newNode->data = node->data;    
+    newNode->color = node->color; 
+    newNode->IsNullNode = node->IsNullNode; 
+    newNode->left = node->left; 
+    newNode->right = node->right; 
+    newNode->parent = node->parent; 
+
+    return newNode; 
 }
 
 string RedBlackTree::ToInfixString(const RBTNode *n){ //will have to update this again later
@@ -175,7 +290,6 @@ string RedBlackTree::ToInfixString(const RBTNode *n){ //will have to update this
         return " B" + to_string(n->data) + " ";
     }
 }
-
 
 bool RedBlackTree::Contains(int data) const{
 
