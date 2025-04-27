@@ -30,6 +30,16 @@ struct RBTNode {
 */
 
 
+//NOTES TO SELF: 
+/*
+
+I may have to go in and make changes to whereever its neededd to get the uncles color 
+because i'm not sure if I accounted for the nullptr uncle scenario which still counts as black 
+
+
+*/
+
+
 using namespace std;
 
 
@@ -73,17 +83,12 @@ void RedBlackTree::Insert(int d){
         numItems++; //update the size of the tree
 
         if(node->parent != nullptr && node->parent->color == COLOR_RED){
-            
+            InsertFixUp(node); 
 
         }
-        
-
-
 
     }
 }   
-
-
 
 void RedBlackTree::InsertFixUp(RBTNode *new_node){
     
@@ -104,6 +109,11 @@ void RedBlackTree::InsertFixUp(RBTNode *new_node){
         }
         //1-3
         else if(IsRightChild(new_node) && IsRightChild(parent)){
+            LeftRotate(grand_parent); 
+            parent->color = COLOR_BLACK; 
+        }
+
+        else if(IsLeftChild(new_node) && IsRightChild(parent)){
             RightRotate(parent); 
             LeftRotate(grand_parent); 
             new_node->color = COLOR_BLACK; 
@@ -142,23 +152,6 @@ void RedBlackTree::InsertFixUp(RBTNode *new_node){
     }
            
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 bool RedBlackTree::IsLeftChild(RBTNode *node) const{
     RBTNode *parent = node->parent; 
@@ -300,9 +293,45 @@ bool RedBlackTree::Contains(int data) const{
 }
 
 bool containsHelper(RBTNode node, int data){
+
+
     //do this recusrively, base case is that the current node has the value of data, which will return true. Else
     //will recall recurslibe on the right and left node (assuming that they are not nullptr)
 
 
 
+}
+
+
+void RedBlackTree::RightRotate(RBTNode *node){
+
+
+    RBTNode *copyOfParent = CopyOf(node); //save a copy of the parent
+
+    RBTNode *savedRightChild = node->left->right;  //save a copy of the part of the tree that may become abonded
+
+    node = node->left; //this rotates the left child up; 
+
+    node->right = copyOfParent; //this (updates) makes the right side of the rotated node
+
+    //the left side of now parent node stays the same
+    //adressing the now abandoned right node of: 
+
+    node->right->left = savedRightChild; 
+}
+
+
+void RedBlackTree::LeftRotate(RBTNode *node){
+    //this is the same as the above right rotate, just reveresed: 
+    
+    RBTNode *copyOfParent = CopyOf(node); //copy of parent child 
+
+    RBTNode *savedLeftChild = node->right->left;  //this will become the left childs right node (from the parent)
+
+    node = node->right; //this rotates the right child up; 
+
+    node->left = copyOfParent; //this make continues the pattern 
+
+    //the right side of now parent node stays the same, but it updates the right child spot:
+    node->left->right = savedLeftChild; 
 }
