@@ -39,10 +39,17 @@ class RedBlackTree {
 		int GetMin() const;
 		int GetMax() const;
 		
+
+		vector<int> allData; //i will store all the inserted data values here, so that it makes creating 
+							// a copy constructor easier ( i can just iterate though and insert each one to the copy, 
+							//in the same order) 
 	
 	private: 
 		unsigned long long int numItems  = 0;
 		RBTNode *root = nullptr;
+
+		//using this as a helper function to recursively iterate throught the tree; 
+		bool containsHelper(RBTNode *node, int data) const;
 		
 		static string ToInfixString(const RBTNode *n);
 		static string ToPrefixString(const RBTNode *n);

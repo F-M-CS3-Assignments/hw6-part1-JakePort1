@@ -39,6 +39,10 @@ because i'm not sure if I accounted for the nullptr uncle scenario which still c
 
 */
 
+//TODO: 
+//implement contains
+//implement the other to string variations 
+//fix copy constructor 
 
 using namespace std;
 
@@ -56,15 +60,19 @@ RedBlackTree::RedBlackTree(int newData){
 
 //copy contructor: 
 RedBlackTree::RedBlackTree(const RedBlackTree &rbt){
-
-    // newNode->color = rbt.color;
-    // newNode->data = rbt->data;
-    // return 
+    for(int i : rbt.allData){
+        this->Insert(i); 
+    }
 }
 
 
 
+
+
+
 void RedBlackTree::Insert(int d){
+    allData.push_back(d); //add to list of all data, which I will use for copy constructor 
+
 	//if tree is emtpy, make a root node
     if(root == nullptr){
         RBTNode *node = new RBTNode; 
@@ -275,50 +283,83 @@ RBTNode* RedBlackTree::CopyOf(const RBTNode *node){
 }
 
 string RedBlackTree::ToInfixString(const RBTNode *n){ //will have to update this again later
-    if(n ==  nullptr){
-        return "";
-    }else{
-        cout << "----- test111 -----" << endl;
-        return " B" + to_string(n->data) + " ";
+   
+    //used this video for guidance https://www.youtube.com/watch?v=b_NjndniOqY
+    string answer = "";
+    string color; 
+
+    //base case
+    if(n ==nullptr){
+    return "";
     }
+
+
+    //this just gets the color in a usable format 
+    if(n->color == COLOR_BLACK){
+        color = "B";
+    }
+    else{
+        color = "R"; 
+    }
+
+   //base case 
+   answer += ToInfixString(n->left);        //recursive call 
+   answer += (" " + color + to_string(n->data)  + " ");  //creates the output
+   answer += ToInfixString(n->right); 
+
+   return answer; 
+
 }
+
+
+
+
 
 bool RedBlackTree::Contains(int data) const{
 
-    bool answer = false;
-
-    //base case: 
-    return answer;
+    return containsHelper(root, data);
 }
 
-bool containsHelper(RBTNode node, int data){
-
+bool RedBlackTree::containsHelper(RBTNode *node, int data) const{
 
     //do this recusrively, base case is that the current node has the value of data, which will return true. Else
     //will recall recurslibe on the right and left node (assuming that they are not nullptr)
+    bool answer; 
 
+    //base case 
+    if(node == nullptr){
+        return false; 
+    }
 
+    //other base case 
+    if(node->data == data){
+        return true; 
+    }
+
+    return containsHelper(node->left, data) ||  containsHelper(node->right, data);
 
 }
-
 
 
 //these have bugs and need to be fixed 
 void RedBlackTree::RightRotate(RBTNode *node){
 
-
     // RBTNode *copyOfParent = CopyOf(node); //save a copy of the parent
-    // RBTNode *savedRightChild = node->left->right;  //save a copy of the part of the tree that may become abonded
 
-    RBTNode *leftChild = node->left; 
+    RBTNode *leftChild = node->left; //save the leftChild so that it can be refernces later. 
 
     //this may be redunant: 
     if(leftChild == nullptr){
         return; 
     }
 
+    //the nodes left child will now become the left child of the its right child, because 
+    //the nodes->left->right is going to be bigger than what will replace the node, but we know
+    //it will be smaller than the orignal node (because its already on the left side)
     node->left = leftChild->right; 
 
+
+    //this udpates the parent, since the parent is changing when you rotate
     if(leftChild->right != nullptr){
         leftChild->right->parent = node; 
     }
@@ -344,11 +385,8 @@ void RedBlackTree::RightRotate(RBTNode *node){
 
 
 void RedBlackTree::LeftRotate(RBTNode *node){
-    //this is copied from above, just reverersed, just reveresed: 
+    //this is copied from the RightRotate, just reverersed (same logic),
     
-    // RBTNode *copyOfParent = CopyOf(node); //copy of parent child 
-    // RBTNode *savedLeftChild = node->right->left;  //this will become the left childs right node (from the parent)
-
     RBTNode *rightChild = node->right; //save the right child so that it can be accessed later: 
 
     //This part might be redundant: 
@@ -356,17 +394,16 @@ void RedBlackTree::LeftRotate(RBTNode *node){
         return; 
     }
 
-    node->right = rightChild->left; //move the nodes right child to the left of the left sub tree
+    node->right = rightChild->left; 
 
-    //if statement may again be redundant?
     if(rightChild->left != nullptr){
         rightChild->left->parent = node; 
     }
 
     rightChild->parent = node->parent; 
 
-    if(node->parent == nullptr){ //if its parent is nullptr that implies that it is also the root 
-        root = rightChild; //makes sure that the root does not get lost after a rotatation 
+    if(node->parent == nullptr){ 
+        root = rightChild; 
     }
 
     else if(node == node->parent->left){
@@ -398,29 +435,49 @@ string RedBlackTree::ToPrefixString(const RBTNode *n){
     //else create a string to that holds the info for the currNode, then recursively get the 
     //rest of the right and left trees:
     else{
-        if(n->color == COLOR_BLACK){
+        if(n->color == COLOR_BLACK){ //this just helps get the color in a string format. 
             color = "B";
         }else{
             color = "R"; 
         }
-
         answer = " " + color + to_string(n->data) + " ";
 
         leftSide = ToPrefixString(n->left); 
         rightSide = ToPrefixString(n->right); 
-
     }
 
     return answer + leftSide + rightSide; 
-
-
     
 }
 
 //for debugging: 
 string RedBlackTree::ToPostfixString(const RBTNode *n){
 
-    return " "; 
+    //used this video for guidance: https://www.youtube.com/watch?v=b_NjndniOqY
+
+     //base case 
+    if(n == nullptr){
+        return ""; 
+    }
+
+    string answer = ""; //will store the final answer here 
+
+    //this helps to get the color in a string format
+    string color; 
+    if(n->color == COLOR_BLACK){
+            color = "B";
+    }
+    else{
+        color = "R"; 
+    }
+
+    answer += ToPostfixString(n->left); //do left first then right 
+    answer += ToPostfixString(n->right); 
+
+    answer += " " + color + to_string(n->data) + " ";  //format the output.
+
+    return answer; 
+
 }
 
 // string RedBlackTree::ToInfixString(const RBTNode *n){

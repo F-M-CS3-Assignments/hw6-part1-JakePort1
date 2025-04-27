@@ -58,7 +58,7 @@ void TestInsertThirdNode(){
 	rbt->Insert(30);
 	rbt->Insert(15);
 	rbt->Insert(10); // Left Left
-	cout << "rbt: "  << rbt->ToPrefixString() << endl;
+	//cout << "rbt: "  << rbt->ToPrefixString() << endl;
 	assert(rbt->ToPrefixString() == " B15  R10  R30 ");
 	delete rbt;
 	
@@ -195,10 +195,6 @@ void TestCopyConstructor(){
 }
 
 
-
-
-
-
 void TestContains(){
 	cout << "Testing Contains..." << endl;
 
@@ -218,14 +214,16 @@ void TestContains(){
 	rbt->Insert(34);
 	
 	assert(rbt->Contains(34));
+	assert(rbt->Contains(40));
+	assert(!rbt->Contains(9999999));
+	assert(rbt->Contains(12));
+	assert(rbt->Contains(17));
+
 	delete rbt;
 
 	
-	cout << "TESTS MISSING" << endl << endl;
 	cout << "PASSED!" << endl << endl;
 }
-
-
 
 
 void TestGetMinimumMaximum(){
@@ -242,7 +240,6 @@ void TestGetMinimumMaximum(){
 
 int main(){
 
-	
 	TestSimpleConstructor();
 	TestConstructor();
 	
