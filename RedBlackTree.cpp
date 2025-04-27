@@ -98,7 +98,7 @@ bool RedBlackTree::IsRightChild(RBTNode *node) const{
 RBTNode* RedBlackTree::GetUncle(RBTNode *node) const{    
     
     RBTNode *parent = node->parent; 
-    
+
     if(node->parent->parent == nullptr){
         return nullptr; //will return nullptr if the node is too high to have an uncle, 
                         //for example, if it is the child of the root node, there will be no uncle. 
@@ -111,12 +111,6 @@ RBTNode* RedBlackTree::GetUncle(RBTNode *node) const{
         return node->parent->parent->left;
     }
 }
-
-
-
-
-
-
 
 
 void RedBlackTree::BasicInsert(RBTNode *node){
