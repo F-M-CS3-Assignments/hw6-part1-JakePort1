@@ -75,9 +75,6 @@ void TestInsertThirdNode(){
 	rbt->Insert(45); // Easy case
 	assert(rbt->ToPrefixString() == " B30  R15  R45 ");
 	delete rbt;
-
-
-	
 	
 	//new tests 
 	rbt = new RedBlackTree();
@@ -93,9 +90,7 @@ void TestInsertThirdNode(){
 	rbt->Insert(3); 
 	assert(rbt->ToPrefixString() == " B4  R3  R5 ");
 	delete rbt;
-	
-	
-	
+
 	cout << "PASSED!" << endl << endl;
 }
 
@@ -129,7 +124,6 @@ void TestInsertFifthNode(){
 	//cout << "result: "  << rbt->ToPrefixString() << endl;
 	assert(rbt->ToPrefixString() == " B2  B1  B4  R3  R5 ");
 	delete rbt;
-
 	
 	cout << "PASSED!" << endl << endl;
 }
@@ -245,6 +239,10 @@ void TestContains(){
 	assert(rbt->Contains(12));
 	assert(rbt->Contains(17));
 
+
+
+	assert(!rbt->Contains(1)); // lowest possible case 
+
 	delete rbt;
 
 	
@@ -268,10 +266,6 @@ void TestGetMinimumMaximum(){
 
 	cout << "PASSED!" << endl << endl;
 }
-
-
-
-
 
 int main(){
 

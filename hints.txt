@@ -7,7 +7,6 @@ Insert(int newData){
 	if it is an emtpy tree:  //(root == nullptr)
 		set the color of node to black and the root to node
 		return
-
 	
 	BasicInsert(node); //follow the binary serach tree to add the node as the leaf node
 	
@@ -15,8 +14,6 @@ Insert(int newData){
 	if(node->parent != nullptr && node->parent->color == COLOR_RED){
 			InsertFixUp(node);
 			
-		
-
 	numItems++;
 }
 

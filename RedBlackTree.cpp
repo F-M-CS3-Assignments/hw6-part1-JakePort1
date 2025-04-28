@@ -14,7 +14,7 @@ RedBlackTree::RedBlackTree(){
 }
 
 RedBlackTree::RedBlackTree(int newData){
-    this->Insert(newData); 
+    this->Insert(newData); //start with just the root 
 }
 
 //copy contructor: 
@@ -34,7 +34,7 @@ void RedBlackTree::Insert(int d){
         node->data = d; 
         root = node;
         numItems++;
-    } // add further insert here 
+    } 
     else{
         RBTNode *node = new RBTNode; //dynamically create the node to insert; 
 
@@ -54,21 +54,22 @@ void RedBlackTree::Insert(int d){
 }   
 
 void RedBlackTree::InsertFixUp(RBTNode *new_node){
-    
+    //referenced hints.txt file for this (from canvas)
+
     RBTNode *parent = new_node->parent; 
     RBTNode *uncle = GetUncle(new_node); 
     RBTNode *grand_parent = parent->parent; 
 
     if(uncle == nullptr || uncle->color == COLOR_BLACK){ //if the uncle doesn't exist it will be a null ptr, which is also 
                                                         //considered black 
-
+        //these if statements test for all possible conditions (left-left, left-right, etc...)
         //1-1
         if(grand_parent != nullptr){
             grand_parent->color = COLOR_RED;
         }
         //1-2
         if(IsLeftChild(new_node) && IsLeftChild(parent)){
-            RightRotate(grand_parent); //still need to implement the rotate functions
+            RightRotate(grand_parent); 
             parent->color = COLOR_BLACK;  
         }
         //1-3
@@ -83,14 +84,14 @@ void RedBlackTree::InsertFixUp(RBTNode *new_node){
             new_node->color = COLOR_BLACK; 
             parent->color = COLOR_RED;
         }
-        //1-4
+        //1-5
         else if(IsRightChild(new_node) && IsLeftChild(parent)){
             LeftRotate(parent); 
             RightRotate(grand_parent); 
             new_node->color = COLOR_BLACK; 
             parent->color = COLOR_RED;
         }
-        //1-5
+        //1-6
         else{
             //this case is not possible so it will throw an error: 
             throw invalid_argument("invalid state"); 
@@ -129,7 +130,7 @@ bool RedBlackTree::IsLeftChild(RBTNode *node) const{
 bool RedBlackTree::IsRightChild(RBTNode *node) const{
     RBTNode *parent = node->parent; 
 
-    if(parent->right == node){
+    if(parent->right == node){ //opposite of the above function
         return true; 
     }
     else{
@@ -200,6 +201,7 @@ void RedBlackTree::BasicInsert(RBTNode *node){
 
 int RedBlackTree::GetMin() const {
 
+    //the min node will always be the one farthest to the left 
     RBTNode *currNode = root; 
 
     while(currNode->left != nullptr){
@@ -211,7 +213,8 @@ int RedBlackTree::GetMin() const {
 }
 		   
 int RedBlackTree::GetMax() const {
-    
+
+    //max node will always be farthest to the right. 
     RBTNode *currNode = root; 
 
     while(currNode->right != nullptr){
@@ -290,10 +293,7 @@ bool RedBlackTree::containsHelper(RBTNode *node, int data) const{
 
 }
 
-//these have bugs and need to be fixed 
 void RedBlackTree::RightRotate(RBTNode *node){
-
-    // RBTNode *copyOfParent = CopyOf(node); //save a copy of the parent
 
     RBTNode *leftChild = node->left; //save the leftChild so that it can be refernces later. 
 
@@ -396,7 +396,6 @@ string RedBlackTree::ToPrefixString(const RBTNode *n){
     
 }
 
-//for debugging: 
 string RedBlackTree::ToPostfixString(const RBTNode *n){
 
     //used this video for guidance: https://www.youtube.com/watch?v=b_NjndniOqY
