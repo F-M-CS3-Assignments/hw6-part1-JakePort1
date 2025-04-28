@@ -1,52 +1,13 @@
+//Jacob Port 
+// HW6 Part 1 
+// CPS 222 
+// Professor Hu
 
 #include <iostream>
 #include <cassert>
 #include <random>
 #include "RedBlackTree.h"
-
-/**
- * 
- * This "First Step" tests file is useful to get your project started
- * 
- * To run this code you only need to implement
- * 	+ The Constructor
- * 	+ The Insert() function to insert only one node
- * 	+ The ToInfixString() function to print a tree containing only one node
- * 
-**/
-
-
-/*
-
-struct RBTNode {
-	int data;
-	unsigned short int color;
-	RBTNode *left = nullptr;
-	RBTNode *right = nullptr;
-	RBTNode *parent = nullptr;
-	bool IsNullNode = false;
-};
-
-*/
-
-
-//NOTES TO SELF: 
-/*
-
-I may have to go in and make changes to whereever its neededd to get the uncles color 
-because i'm not sure if I accounted for the nullptr uncle scenario which still counts as black 
-
-
-*/
-
-//TODO: 
-//implement contains
-//implement the other to string variations 
-//fix copy constructor 
-
 using namespace std;
-
-
 
 RedBlackTree::RedBlackTree(){
 	root = nullptr; 
@@ -56,19 +17,12 @@ RedBlackTree::RedBlackTree(int newData){
     this->Insert(newData); 
 }
 
-
-
 //copy contructor: 
 RedBlackTree::RedBlackTree(const RedBlackTree &rbt){
     for(int i : rbt.allData){
         this->Insert(i); 
     }
 }
-
-
-
-
-
 
 void RedBlackTree::Insert(int d){
     allData.push_back(d); //add to list of all data, which I will use for copy constructor 
@@ -311,10 +265,6 @@ string RedBlackTree::ToInfixString(const RBTNode *n){ //will have to update this
 
 }
 
-
-
-
-
 bool RedBlackTree::Contains(int data) const{
 
     return containsHelper(root, data);
@@ -339,7 +289,6 @@ bool RedBlackTree::containsHelper(RBTNode *node, int data) const{
     return containsHelper(node->left, data) ||  containsHelper(node->right, data);
 
 }
-
 
 //these have bugs and need to be fixed 
 void RedBlackTree::RightRotate(RBTNode *node){
@@ -383,7 +332,6 @@ void RedBlackTree::RightRotate(RBTNode *node){
 
 }
 
-
 void RedBlackTree::LeftRotate(RBTNode *node){
     //this is copied from the RightRotate, just reverersed (same logic),
     
@@ -417,8 +365,6 @@ void RedBlackTree::LeftRotate(RBTNode *node){
     rightChild->left = node; 
     node->parent = rightChild; 
 }
-
-
 
 string RedBlackTree::ToPrefixString(const RBTNode *n){
 
@@ -479,12 +425,3 @@ string RedBlackTree::ToPostfixString(const RBTNode *n){
     return answer; 
 
 }
-
-// string RedBlackTree::ToInfixString(const RBTNode *n){
-
-
-//     return " "; 
-
-// }
-
-

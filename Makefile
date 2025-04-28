@@ -8,4 +8,7 @@ testFirstSteps:
 	g++ -Wall RedBlackTree.cpp RedBlackTreeTestsFirstStep.cpp -o r
 	./r
 
+testLeaks: 
+	valgrind --leak-check=full ./tests
+
 all: comp run
